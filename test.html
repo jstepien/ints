@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content='text/html;charset=utf-8' http-equiv='Content-Type' />
+<script src='ints.js' type='text/javascript'></script>
+<script src='jscheck/jscheck.js' type='text/javascript'></script>
+</head>
+<body>
+<pre></pre>
+<script type='text/javascript'>
+(function() {
+  var limit = 1e6;
+  var pre = document.getElementsByTagName("pre")[0];
+  function toInt(val) {
+    return ints.parse(val.toString(2));
+  };
+  function fromInt(int) {
+    return parseInt(ints.format(int), 2);
+  };
+  JSC.claim("Parse and format", function(verdict, value) {
+    return verdict(value == fromInt(toInt(value)));
+  }, [JSC.integer(10)]);
+  JSC.claim("Unsafe conversions", function(verdict, value) {
+    return verdict(value == ints.unsafeToNumber(ints.unsafeToInt(value)));
+  }, [JSC.integer(0, 10)]);
+  JSC.claim("Equality", function(verdict, a, b) {
+    var equality = ints.eq(toInt(a), toInt(b));
+    if (a == b) {
+      return verdict(equality);
+    } else {
+      return verdict(!equality);
+    }
+  }, [JSC.integer(0, 9), JSC.integer(0, 9)]);
+  JSC.claim("Adding", function(verdict, a, b) {
+    return verdict(a + b == fromInt(ints.add(toInt(a), toInt(b))));
+  }, [JSC.integer(limit), JSC.integer(limit)]);
+  JSC.claim("Multiplying", function(verdict, a, b) {
+    return verdict(a * b == fromInt(ints.mul(toInt(a), toInt(b))));
+  }, [JSC.integer(limit), JSC.integer(limit)]);
+  JSC.on_report(function (str) {
+    pre.innerHTML = str;
+  });
+  var start = new Date();
+  JSC.check(1);
+  pre.innerHTML += "\nTook " + (new Date() - start) + "ms";
+})();
+</script>
+</body>
+</html>

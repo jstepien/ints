@@ -1,0 +1,6 @@
+[submodule "purescript-strings"]
+	path = purescript-strings
+	url = https://github.com/purescript/purescript-strings.git
+[submodule "jscheck"]
+	path = jscheck
+	url = https://github.com/douglascrockford/JSCheck.git
