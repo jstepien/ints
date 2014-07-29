@@ -9,20 +9,13 @@
 <pre></pre>
 <script type='text/javascript'>
 (function() {
-  var limit = 1e6;
+  var intGen = JSC.integer(0, 1e6);
   var pre = document.getElementsByTagName("pre")[0];
-  function toInt(val) {
-    return ints.parse(val.toString(2));
-  };
-  function fromInt(int) {
-    return parseInt(ints.format(int), 2);
-  };
+  var toInt = ints.unsafeToInt;
+  var fromInt = ints.unsafeToNumber;
   JSC.claim("Parse and format", function(verdict, value) {
     return verdict(value == fromInt(toInt(value)));
-  }, [JSC.integer(10)]);
-  JSC.claim("Unsafe conversions", function(verdict, value) {
-    return verdict(value == ints.unsafeToNumber(ints.unsafeToInt(value)));
-  }, [JSC.integer(0, 10)]);
+  }, [intGen]);
   JSC.claim("Equality", function(verdict, a, b) {
     var equality = ints.eq(toInt(a), toInt(b));
     if (a == b) {
@@ -33,10 +26,10 @@
   }, [JSC.integer(0, 9), JSC.integer(0, 9)]);
   JSC.claim("Adding", function(verdict, a, b) {
     return verdict(a + b == fromInt(ints.add(toInt(a), toInt(b))));
-  }, [JSC.integer(limit), JSC.integer(limit)]);
+  }, [intGen, intGen]);
   JSC.claim("Multiplying", function(verdict, a, b) {
     return verdict(a * b == fromInt(ints.mul(toInt(a), toInt(b))));
-  }, [JSC.integer(limit), JSC.integer(limit)]);
+  }, [intGen, intGen]);
   JSC.on_report(function (str) {
     pre.innerHTML = str;
   });
