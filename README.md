@@ -70,7 +70,7 @@ Run tests by opening `test.html` in a web browser.
 
 ## Coming soon!
 
-  - Subtraction,
+  - Comparison operators,
   - Division, and
   - Negative numbers!
 
