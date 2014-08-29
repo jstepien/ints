@@ -7,6 +7,7 @@ all: ints.js
 
 Ints.js: Ints.purs $(shell find */src -name '*.purs')
 	psc -m Ints $^ -o $@
+	sed -i -f postprocess.sed $@ || (rm -f $@ && false)
 
 ints.js: Ints.js wrapper.js
 	$(JAVA_CMD) -jar $(COMPILER) -O ADVANCED --js_output_file=$@ $^
