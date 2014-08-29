@@ -38,6 +38,9 @@
   JSC.claim("Multiplying", function(verdict, a, b) {
     return verdict(a * b == fromInt(ints.mul(toInt(a), toInt(b))));
   }, [intGen, intGen]);
+  JSC.claim("Subtracting", function(verdict, a, b) {
+    return verdict(Math.max(a - b, 0) == fromInt(ints.sub(toInt(a), toInt(b))));
+  }, [intGen, intGen]);
   JSC.on_report(function (str) {
     pre.innerHTML = str;
   });

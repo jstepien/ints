@@ -1,4 +1,4 @@
-module Ints (Int(), one, zero, eq, lt, add, mul, format, parse) where
+module Ints (Int(), one, zero, eq, lt, add, mul, sub, format, parse) where
 
 import Data.String (charAt, drop)
 import Data.Array (length)
@@ -35,6 +35,22 @@ mul _ [] = zero
 mul [] _ = zero
 mul (Z : xs) ys = mul xs (Z : ys)
 mul (O : xs) ys = ys `add` mul xs (Z : ys)
+
+sub :: Int -> Int -> Int
+sub a b = if a `lt` b
+             then zero
+             else sub' Z a b
+  where sub' Z x [] = x
+        sub' O x [] = sub' Z x one
+        sub' _ [] _ = zero
+        sub' O (O : xs) (O : ys) = O : sub' O xs ys
+        sub' O (O : xs) (Z : ys) = Z : sub' Z xs ys
+        sub' O (Z : xs) (O : ys) = Z : sub' O xs ys
+        sub' O (Z : xs) (Z : ys) = O : sub' O xs ys
+        sub' Z (O : xs) (O : ys) = Z : sub' Z xs ys
+        sub' Z (O : xs) (Z : ys) = O : sub' Z xs ys
+        sub' Z (Z : xs) (O : ys) = O : sub' O xs ys
+        sub' Z (Z : xs) (Z : ys) = Z : sub' Z xs ys
 
 eq :: Int -> Int -> Boolean
 eq = (==)

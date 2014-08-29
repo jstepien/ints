@@ -11,6 +11,9 @@ window['ints'] = function(i) {
   mod['add'] = function(a, b) {
     return i.add(a)(b);
   };
+  mod['sub'] = function(a, b) {
+    return i.sub(a)(b);
+  };
   mod['mul'] = function(a, b) {
     return i.mul(a)(b);
   };
