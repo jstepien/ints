@@ -4,3 +4,12 @@
 [submodule "jscheck"]
 	path = jscheck
 	url = https://github.com/douglascrockford/JSCheck.git
+[submodule "purescript-arrays"]
+	path = purescript-arrays
+	url = https://github.com/purescript/purescript-arrays.git
+[submodule "purescript-control"]
+	path = purescript-control
+	url = https://github.com/purescript/purescript-control.git
+[submodule "purescript-maybe"]
+	path = purescript-maybe
+	url = https://github.com/purescript/purescript-maybe.git

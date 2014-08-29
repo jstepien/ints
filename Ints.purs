@@ -1,9 +1,14 @@
-module Ints (Int(), one, zero, eq, add, mul, format, parse) where
+module Ints (Int(), one, zero, eq, lt, add, mul, format, parse) where
 
-import Data.String
+import Data.String (charAt, drop)
+import Data.Array (length)
 
 data Bit = O | Z
 type Int = [Bit]
+
+instance eqBit :: Eq Bit where
+  (==) = refEq
+  (/=) = refIneq
 
 zero :: Int
 zero = []
@@ -32,10 +37,21 @@ mul (Z : xs) ys = mul xs (Z : ys)
 mul (O : xs) ys = ys `add` mul xs (Z : ys)
 
 eq :: Int -> Int -> Boolean
-eq [] [] = true
-eq (Z : xs) (Z : ys) = eq xs ys
-eq (O : xs) (O : ys) = eq xs ys
-eq _ _ = false
+eq = (==)
+
+lt :: Int -> Int -> Boolean
+lt a b = if length a < length b
+             then true
+             else lt' a b
+  where lt' [] (_ : _) = true
+        lt' _ [] = false
+        lt' (O : x) (Z : y) = if x == y
+                                 then false
+                                 else lt' x y
+        lt' (Z : x) (O : y) = if x == y
+                                 then true
+                                 else lt' x y
+        lt' (_ : x) (_ : y) = lt' x y
 
 format :: Int -> String
 format [] = "0"

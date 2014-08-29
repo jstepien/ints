@@ -5,6 +5,9 @@ window['ints'] = function(i) {
   mod['eq'] = function(a, b) {
     return i.eq(a)(b);
   };
+  mod['lt'] = function(a, b) {
+    return i.lt(a)(b);
+  };
   mod['add'] = function(a, b) {
     return i.add(a)(b);
   };

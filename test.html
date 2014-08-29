@@ -24,6 +24,14 @@
       return verdict(!equality);
     }
   }, [JSC.integer(0, 9), JSC.integer(0, 9)]);
+  JSC.claim("Lesser than", function(verdict, a, b) {
+    var lt = ints.lt(toInt(a), toInt(b));
+    if (a < b) {
+      return verdict(lt);
+    } else {
+      return verdict(!lt);
+    }
+  }, [intGen, intGen]);
   JSC.claim("Adding", function(verdict, a, b) {
     return verdict(a + b == fromInt(ints.add(toInt(a), toInt(b))));
   }, [intGen, intGen]);

@@ -5,7 +5,7 @@ JAVA_CMD ?= java
 
 all: ints.js
 
-Ints.js: Ints.purs purescript-strings/src/Data/String.purs
+Ints.js: Ints.purs $(shell find */src -name '*.purs')
 	psc -m Ints $^ -o $@
 
 ints.js: Ints.js wrapper.js
