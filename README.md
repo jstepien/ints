@@ -1,7 +1,7 @@
 # ints
 
 Real¹ integers for JavaScript.
-Unbounded², exact and trustworthy.
+Unbounded, exact and trustworthy.
 
 [Grab a release.][rel]
 [Follow me on Twitter.][t]
@@ -75,8 +75,7 @@ Run tests by opening `test.html` in a web browser.
 ## Coming soon!
 
   - Comparison operators,
-  - Division, and
-  - Negative numbers!
+  - Division.
 
 ## License
 
@@ -104,5 +103,3 @@ Run tests by opening `test.html` in a web browser.
 ---
 
 ¹ That is _genuine_; not as the set containing _π_.
-
-² Well, without an upper bound.

@@ -9,7 +9,7 @@
 <pre></pre>
 <script type='text/javascript'>
 (function() {
-  var intGen = JSC.integer(0, 1e6);
+  var intGen = JSC.integer(-1e6, 1e6);
   var pre = document.getElementsByTagName("pre")[0];
   var toInt = ints.unsafeToInt;
   var fromInt = ints.unsafeToNumber;
@@ -23,7 +23,7 @@
     } else {
       return verdict(!equality);
     }
-  }, [JSC.integer(0, 9), JSC.integer(0, 9)]);
+  }, [JSC.integer(-9, 9), JSC.integer(-9, 9)]);
   JSC.claim("Lesser than", function(verdict, a, b) {
     var lt = ints.lt(toInt(a), toInt(b));
     if (a < b) {
@@ -39,7 +39,7 @@
     return verdict(a * b == fromInt(ints.mul(toInt(a), toInt(b))));
   }, [intGen, intGen]);
   JSC.claim("Subtracting", function(verdict, a, b) {
-    return verdict(Math.max(a - b, 0) == fromInt(ints.sub(toInt(a), toInt(b))));
+    return verdict(a - b == fromInt(ints.sub(toInt(a), toInt(b))));
   }, [intGen, intGen]);
   JSC.on_report(function (str) {
     pre.innerHTML = str;

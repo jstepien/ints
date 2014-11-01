@@ -5,7 +5,7 @@ import Data.Array (length)
 
 data Bit = O | Z
 type Nat = [Bit]
-data Int = Pos Nat
+data Int = Pos Nat | Neg Nat
 
 instance eqBit :: Eq Bit where
   (==) = refEq
@@ -17,7 +17,14 @@ zero = Pos []
 one :: Int
 one = Pos [O]
 
+neg :: Int -> Int
+neg (Pos a) = Neg a
+neg (Neg a) = Pos a
+
 add :: Int -> Int -> Int
+add (Neg a) (Neg b) = neg $ add (Pos a) (Pos b)
+add (Pos a) (Neg b) = (Pos a) `sub` (Pos b)
+add (Neg a) (Pos b) = (Pos b) `sub` (Pos a)
 add (Pos a) (Pos b) = Pos $ add' Z a b
   where add' Z x [] = x
         add' O x [] = add' Z x [O]
@@ -32,14 +39,20 @@ add (Pos a) (Pos b) = Pos $ add' Z a b
         add' Z (Z : xs) (Z : ys) = Z : add' Z xs ys
 
 mul :: Int -> Int -> Int
+mul (Neg x) (Neg y) = (Pos x) `mul` (Pos y)
+mul (Neg x) (Pos y) = neg $ (Pos x) `mul` (Pos y)
+mul (Pos x) (Neg y) = (Neg x) `mul` (Pos y)
 mul _ (Pos []) = zero
 mul (Pos []) _ = zero
 mul (Pos (Z : xs)) (Pos ys) = mul (Pos xs) (Pos (Z : ys))
 mul (Pos (O : xs)) (Pos ys) = (Pos ys) `add` mul (Pos xs) (Pos (Z : ys))
 
 sub :: Int -> Int -> Int
+sub (Pos a) (Neg b) = (Pos a) `add` (Pos b)
+sub (Neg a) (Pos b) = neg $ (Pos a) `add` (Pos b)
+sub (Neg a) (Neg b) = (Pos b) `sub` (Pos a)
 sub (Pos a) (Pos b) = if (Pos a) `lt` (Pos b)
-                        then zero
+                        then neg $ (Pos b) `sub` (Pos a)
                         else Pos $ sub' Z a b
   where sub' Z x [] = x
         sub' O x [] = sub' Z x [O]
@@ -55,8 +68,13 @@ sub (Pos a) (Pos b) = if (Pos a) `lt` (Pos b)
 
 eq :: Int -> Int -> Boolean
 eq (Pos x) (Pos y) = x == y
+eq (Neg x) (Neg y) = x == y
+eq _ _ = false
 
 lt :: Int -> Int -> Boolean
+lt (Neg a) (Neg b) = a /= b && not ((Pos a) `lt` (Pos b))
+lt (Neg _) (Pos _) = true
+lt (Pos _) (Neg _) = false
 lt (Pos a) (Pos b) = length a < length b || lt' a b
   where lt' [] (_ : _) = true
         lt' _ [] = false
@@ -65,6 +83,7 @@ lt (Pos a) (Pos b) = length a < length b || lt' a b
         lt' (_ : x) (_ : y) = lt' x y
 
 format :: Int -> String
+format (Neg x) = "-" ++ format (Pos x)
 format (Pos []) = "0"
 format (Pos x) = fmt "" $ reverse x
   where fmt str [] = str
@@ -72,12 +91,15 @@ format (Pos x) = fmt "" $ reverse x
         fmt str (O : xs) = fmt (str ++ "1") xs
 
 parse :: String -> Int
-parse str = Pos $ reverse $ dropZeroes $ parse' str
+parse str = sign $ reverse $ dropZeroes $ parse' $ withoutMinus
   where parse' "" = []
         parse' s = case charAt 0 s of
                      "0" -> Z : rest
                      "1" -> O : rest
                        where rest = parse' $ drop 1 s
+        negative = charAt 0 str == "-"
+        withoutMinus = if negative then drop 1 str else str
+        sign = if negative then Neg else Pos
         dropZeroes [] = []
         dropZeroes (Z : xs) = dropZeroes xs
         dropZeroes xs@(O : _) = xs
