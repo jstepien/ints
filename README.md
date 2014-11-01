@@ -19,6 +19,10 @@ All functions expect their arguments to be ints unless stated otherwise.
 
 Returns a sum of `a` and `b`.
 
+### `ints.sub(a, b)`
+
+Returns a difference of `a` and `b`.
+
 ### `ints.mul(a, b)`
 
 Returns a product of `a` and `b`.
