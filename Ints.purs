@@ -56,17 +56,11 @@ eq :: Int -> Int -> Boolean
 eq = (==)
 
 lt :: Int -> Int -> Boolean
-lt a b = if length a < length b
-             then true
-             else lt' a b
+lt a b = length a < length b || lt' a b
   where lt' [] (_ : _) = true
         lt' _ [] = false
-        lt' (O : x) (Z : y) = if x == y
-                                 then false
-                                 else lt' x y
-        lt' (Z : x) (O : y) = if x == y
-                                 then true
-                                 else lt' x y
+        lt' (O : x) (Z : y) = x /= y && lt' x y
+        lt' (Z : x) (O : y) = x == y || lt' x y
         lt' (_ : x) (_ : y) = lt' x y
 
 format :: Int -> String
