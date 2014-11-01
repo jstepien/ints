@@ -4,22 +4,23 @@ import Data.String (charAt, drop)
 import Data.Array (length)
 
 data Bit = O | Z
-type Int = [Bit]
+type Nat = [Bit]
+data Int = Pos Nat
 
 instance eqBit :: Eq Bit where
   (==) = refEq
   (/=) = refIneq
 
 zero :: Int
-zero = []
+zero = Pos []
 
 one :: Int
-one = [O]
+one = Pos [O]
 
 add :: Int -> Int -> Int
-add = add' Z
+add (Pos a) (Pos b) = Pos $ add' Z a b
   where add' Z x [] = x
-        add' O x [] = add' Z x one
+        add' O x [] = add' Z x [O]
         add' c [] x = add' c x []
         add' O (O : xs) (O : ys) = O : add' O xs ys
         add' O (O : xs) (Z : ys) = Z : add' O xs ys
@@ -31,18 +32,18 @@ add = add' Z
         add' Z (Z : xs) (Z : ys) = Z : add' Z xs ys
 
 mul :: Int -> Int -> Int
-mul _ [] = zero
-mul [] _ = zero
-mul (Z : xs) ys = mul xs (Z : ys)
-mul (O : xs) ys = ys `add` mul xs (Z : ys)
+mul _ (Pos []) = zero
+mul (Pos []) _ = zero
+mul (Pos (Z : xs)) (Pos ys) = mul (Pos xs) (Pos (Z : ys))
+mul (Pos (O : xs)) (Pos ys) = (Pos ys) `add` mul (Pos xs) (Pos (Z : ys))
 
 sub :: Int -> Int -> Int
-sub a b = if a `lt` b
-             then zero
-             else sub' Z a b
+sub (Pos a) (Pos b) = if (Pos a) `lt` (Pos b)
+                        then zero
+                        else Pos $ sub' Z a b
   where sub' Z x [] = x
-        sub' O x [] = sub' Z x one
-        sub' _ [] _ = zero
+        sub' O x [] = sub' Z x [O]
+        sub' _ [] _ = []
         sub' O (O : xs) (O : ys) = O : sub' O xs ys
         sub' O (O : xs) (Z : ys) = Z : sub' Z xs ys
         sub' O (Z : xs) (O : ys) = Z : sub' O xs ys
@@ -53,10 +54,10 @@ sub a b = if a `lt` b
         sub' Z (Z : xs) (Z : ys) = Z : sub' Z xs ys
 
 eq :: Int -> Int -> Boolean
-eq = (==)
+eq (Pos x) (Pos y) = x == y
 
 lt :: Int -> Int -> Boolean
-lt a b = length a < length b || lt' a b
+lt (Pos a) (Pos b) = length a < length b || lt' a b
   where lt' [] (_ : _) = true
         lt' _ [] = false
         lt' (O : x) (Z : y) = x /= y && lt' x y
@@ -64,14 +65,14 @@ lt a b = length a < length b || lt' a b
         lt' (_ : x) (_ : y) = lt' x y
 
 format :: Int -> String
-format [] = "0"
-format x = fmt "" $ reverse x
+format (Pos []) = "0"
+format (Pos x) = fmt "" $ reverse x
   where fmt str [] = str
         fmt str (Z : xs) = fmt (str ++ "0") xs
         fmt str (O : xs) = fmt (str ++ "1") xs
 
 parse :: String -> Int
-parse str = reverse $ dropZeroes $ parse' str
+parse str = Pos $ reverse $ dropZeroes $ parse' str
   where parse' "" = []
         parse' s = case charAt 0 s of
                      "0" -> Z : rest
