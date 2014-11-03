@@ -31,6 +31,10 @@ Returns a product of `a` and `b`.
 
 Returns `true` if `a` is equal to `b` and `false` otherwise.
 
+### `ints.lt(a, b)`
+
+Returns `true` if `a` is lesser than `b` and `false` otherwise.
+
 ### `ints.zero`
 
 Constant `0`.
