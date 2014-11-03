@@ -46,7 +46,7 @@ Constant `1`.
 ### `ints.parse(str)`
 
 Returns an int by parsing string `str`.
-The argument has to be expressed in base 2, e.g. `"1101"`.
+The argument has to be expressed in base 2, e.g. `"1101"` or `"-101"`.
 
 ### `ints.format(int)`
 
