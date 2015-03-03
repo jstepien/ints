@@ -27,6 +27,11 @@ Returns a difference of `a` and `b`.
 
 Returns a product of `a` and `b`.
 
+### `ints.div(a, b)`
+
+Returns a quotient of `a` and `b` if `b` is not equal to `ints.zero`.
+Otherwise returns `undefined`.
+
 ### `ints.eq(a, b)`
 
 Returns `true` if `a` is equal to `b` and `false` otherwise.
@@ -78,8 +83,7 @@ Run tests by opening `test.html` in a web browser.
 
 ## Coming soon!
 
-  - Comparison operators,
-  - Division.
+  - Comparison operators!
 
 ## License
 

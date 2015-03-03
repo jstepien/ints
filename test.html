@@ -41,6 +41,13 @@
   JSC.claim("Subtracting", function(verdict, a, b) {
     return verdict(a - b == fromInt(ints.sub(toInt(a), toInt(b))));
   }, [intGen, intGen]);
+  JSC.claim("Dividing", function(verdict, a, b) {
+    var val = ints.div(toInt(a), toInt(b));
+    if (0 == b)
+      return verdict(undefined === val);
+    else
+      return verdict(Math.trunc(a / b) == fromInt(val));
+  }, [intGen, intGen]);
   JSC.on_report(function (str) {
     pre.innerHTML = str;
   });

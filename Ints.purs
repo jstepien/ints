@@ -1,4 +1,4 @@
-module Ints (Int(), one, zero, eq, lt, add, mul, sub, format, parse) where
+module Ints (Int(), one, zero, eq, lt, add, mul, div, sub, format, parse) where
 
 import Prelude hiding (one, zero)
 import Data.String (charAt, drop)
@@ -67,6 +67,30 @@ sub (Pos a) (Pos b) = if (Pos a) `lt` (Pos b)
         sub' Z (O : xs) (Z : ys) = O : sub' Z xs ys
         sub' Z (Z : xs) (O : ys) = O : sub' O xs ys
         sub' Z (Z : xs) (Z : ys) = Z : sub' Z xs ys
+
+div :: Int -> Int -> Maybe Int
+div (Neg a) (Neg b)  = div (Pos a) (Pos b)
+div (Neg a) (Pos b)  = div (Pos a) (Neg b)
+div (Pos a) (Neg b)  = neg <$> div (Pos a) (Pos b)
+div   _     (Pos []) = Nothing
+div (Pos a) (Pos b)  | length a < length b = Just zero
+div (Pos a) (Pos b)  = Just $ Pos $ hlp (reverse a) pads []
+  where pads = map padWithZeros (range lengthDiff 0)
+        zeroes 0 = []
+        zeroes n = Z : zeroes (n - 1)
+        padWithZeros n = (reverse b) `append` zeroes n
+        lengthDiff = length a - length b
+        hlp _  []         acc = acc
+        hlp xs (ys : yss) acc = recur numeratorIsLesser
+          where numeratorIsLesser = length xs < length ys
+                bitsToPos bits = Pos $ reverse bits
+                posToBits (Pos bits) = reverse bits
+                recur true  = hlp xs yss (Z : acc)
+                recur false = let diff = bitsToPos xs `sub` bitsToPos ys in
+                                  if diff `lt` zero
+                                     then recur true
+                                     else hlp (posToBits diff) yss (O : acc)
+
 
 eq :: Int -> Int -> Boolean
 eq (Pos x) (Pos y) = x == y

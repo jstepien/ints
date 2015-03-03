@@ -17,6 +17,12 @@ window['ints'] = function(i) {
   mod['mul'] = function(a, b) {
     return i.mul(a)(b);
   };
+  mod['div'] = function(a, b) {
+    return (function(maybe) {
+      if (maybe instanceof PS.Data_Maybe.Just)
+        return maybe.value0;
+    })(i.div(a)(b));
+  };
   mod['format'] = i.format;
   mod['parse'] = i.parse;
   mod['unsafeToInt'] = function(x) {
