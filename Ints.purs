@@ -1,5 +1,6 @@
 module Ints (Int(), one, zero, eq, lt, add, mul, sub, format, parse) where
 
+import Prelude hiding (one, zero)
 import Data.String (charAt, drop)
 import Data.Array (length)
 
