@@ -2,7 +2,8 @@ module Ints (Int(), one, zero, eq, lt, add, mul, sub, format, parse) where
 
 import Prelude hiding (one, zero)
 import Data.String (charAt, drop)
-import Data.Array (length)
+import Data.Array (length, map, range, append, concat, take)
+import Data.Maybe
 
 data Bit = O | Z
 type Nat = [Bit]
@@ -54,7 +55,7 @@ sub (Neg a) (Pos b) = neg $ (Pos a) `add` (Pos b)
 sub (Neg a) (Neg b) = (Pos b) `sub` (Pos a)
 sub (Pos a) (Pos b) = if (Pos a) `lt` (Pos b)
                         then neg $ (Pos b) `sub` (Pos a)
-                        else Pos $ sub' Z a b
+                        else Pos $ dropZeroes $ sub' Z a b
   where sub' Z x [] = x
         sub' O x [] = sub' Z x [O]
         sub' _ [] _ = []
@@ -92,7 +93,7 @@ format (Pos x) = fmt "" $ reverse x
         fmt str (O : xs) = fmt (str ++ "1") xs
 
 parse :: String -> Int
-parse str = sign $ reverse $ dropZeroes $ parse' $ withoutMinus
+parse str = sign $ dropZeroes $ reverse $ parse' $ withoutMinus
   where parse' "" = []
         parse' s = case charAt 0 s of
                      "0" -> Z : rest
@@ -101,11 +102,25 @@ parse str = sign $ reverse $ dropZeroes $ parse' $ withoutMinus
         negative = charAt 0 str == "-"
         withoutMinus = if negative then drop 1 str else str
         sign = if negative then Neg else Pos
-        dropZeroes [] = []
-        dropZeroes (Z : xs) = dropZeroes xs
-        dropZeroes xs@(O : _) = xs
 
 reverse :: forall a . [a] -> [a]
 reverse = rev []
   where rev xs [] = xs
         rev ys (x : xs) = rev (x : ys) xs
+
+type Seen1 = Boolean
+type Index = Number
+data Last1 = Last1 Seen1 Index
+
+-- Removes most significant zeroes.
+dropZeroes :: Nat -> Nat
+dropZeroes [] = []
+dropZeroes bits = filtered $ fold bits
+  where filtered (Last1 false _)   = []
+        filtered (Last1 true  n) = take n bits
+        fold = foldr removeZeroes
+          where foldr f [] = Last1 false (length bits)
+                foldr f (x:xs) = f x (fold xs)
+        removeZeroes _ (Last1 true  n) = Last1 true  n
+        removeZeroes O (Last1 false n) = Last1 true  n
+        removeZeroes Z (Last1 false n) = Last1 false (n - 1)
