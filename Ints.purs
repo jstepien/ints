@@ -2,7 +2,7 @@ module Ints (Int(), one, zero, eq, lt, add, mul, div, sub, format, parse) where
 
 import Prelude hiding (one, zero)
 import Data.String (charAt, drop)
-import Data.Array (length, map, range, append, concat, take)
+import Data.Array (length, map, range, append, concat, take, reverse)
 import Data.Maybe
 
 data Bit = O | Z
@@ -127,11 +127,6 @@ parse str = sign $ dropZeroes $ reverse $ parse' $ withoutMinus
         negative = charAt 0 str == "-"
         withoutMinus = if negative then drop 1 str else str
         sign = if negative then Neg else Pos
-
-reverse :: forall a . [a] -> [a]
-reverse = rev []
-  where rev xs [] = xs
-        rev ys (x : xs) = rev (x : ys) xs
 
 type Seen1 = Boolean
 type Index = Number
