@@ -44,10 +44,11 @@ mul :: Int -> Int -> Int
 mul (Neg x) (Neg y) = (Pos x) `mul` (Pos y)
 mul (Neg x) (Pos y) = neg $ (Pos x) `mul` (Pos y)
 mul (Pos x) (Neg y) = (Neg x) `mul` (Pos y)
-mul _ (Pos []) = zero
-mul (Pos []) _ = zero
-mul (Pos (Z : xs)) (Pos ys) = mul (Pos xs) (Pos (Z : ys))
-mul (Pos (O : xs)) (Pos ys) = (Pos ys) `add` mul (Pos xs) (Pos (Z : ys))
+mul (Pos x) (Pos y) = mul' zero x y
+  where mul' acc []       _  = acc
+        mul' acc _        [] = acc
+        mul' acc (Z : as) bs = mul' acc                as (Z : bs)
+        mul' acc (O : as) bs = mul' (acc `add` Pos bs) as (Z : bs)
 
 sub :: Int -> Int -> Int
 sub (Pos a) (Neg b) = (Pos a) `add` (Pos b)
