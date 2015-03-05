@@ -8,11 +8,16 @@
 <body>
 <pre></pre>
 <script type='text/javascript'>
-(function() {
+window.onload = function() {
+
   var intGen = JSC.integer(-1e6, 1e6);
+  var exprGen = (function(opGen) {
+    return JSC.array([intGen, opGen, intGen, opGen, intGen, opGen, intGen]);
+  })(JSC.one_of(['+', '-', '*', '/']));
   var pre = document.getElementsByTagName("pre")[0];
   var toInt = ints.unsafeToInt;
   var fromInt = ints.unsafeToNumber;
+
   JSC.claim("Parse and format", function(verdict, value) {
     return verdict(value == fromInt(toInt(value)));
   }, [intGen]);
@@ -48,13 +53,43 @@
     else
       return verdict(Math.trunc(a / b) == fromInt(val));
   }, [intGen, intGen]);
+
+  JSC.claim("Sequences of operations", function(verdict, expr) {
+    var expr = expr.slice();
+    var applyToNum = function(x, y, op) {
+      if (op.match(/^[+/*-]$/)) {
+        var val = eval("(" + parseInt(x) + ")" + op + "(" + parseInt(y) + ")");
+        return Math.trunc(val);
+      }
+    };
+    var applyToInt = function(x, y, op) {
+      var funs = {'+': ints.add, '-': ints.sub, '*': ints.mul, '/': ints.div};
+      return funs[op](x, y);
+    };
+    var numAccum = expr.shift();
+    var intAccum = toInt(numAccum);
+    while (expr.length > 0) {
+      var op = expr.shift();
+      var arg = expr.shift();
+      if ('/' !== op || 0 !== arg) {
+        var numResult = applyToNum(numAccum, arg, op);
+        // Skip the operation if the result isn't precise any longer.
+        if (numResult + 1 === numResult)
+          continue;
+        numAccum = numResult;
+        intAccum = applyToInt(intAccum, toInt(arg), op);
+      }
+    }
+    return verdict(numAccum === fromInt(intAccum));
+  }, [exprGen]);
+
   JSC.on_report(function (str) {
     pre.innerHTML = str;
   });
   var start = new Date();
   JSC.check(1);
   pre.innerHTML += "\nTook " + (new Date() - start) + "ms";
-})();
+};
 </script>
 </body>
 </html>
